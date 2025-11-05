@@ -1,5 +1,6 @@
 package com.vehicle.interfaces.rest;
 
+import com.vehicle.domain.model.commands.DeleteVehicleCommand;
 import com.vehicle.infrastructure.persistence.jpa.VehicleRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -195,7 +196,17 @@ public class VehiclesController {
     }
 
 
-
+    @Operation(summary = "Logically delete (withdraw) a vehicle")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Vehicle withdrawn"),
+            @ApiResponse(responseCode = "404", description = "Vehicle not found"),
+            @ApiResponse(responseCode = "409", description = "Business rule prevents deletion")
+    })
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        commandService.handle(new DeleteVehicleCommand(id));
+        return ResponseEntity.noContent().build(); // 204
+    }
 
 
 }

@@ -1,5 +1,6 @@
 package com.vehicle.interfaces.rest.errors;
 
+import com.vehicle.domain.exceptions.VehicleDeletionNotAllowedException;
 import com.vehicle.domain.exceptions.VehicleNotFoundException;
 import com.vehicle.domain.exceptions.VehiclePlateAlreadyExistsException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -68,6 +69,14 @@ public class GlobalExceptionHandler {
             IllegalArgumentException ex, HttpServletRequest req) {
         return build(HttpStatus.BAD_REQUEST, "Bad Request", ex.getMessage(), req, null);
     }
+
+    @ExceptionHandler(VehicleDeletionNotAllowedException.class)
+    public ResponseEntity<ApiError> handleDeletionNotAllowed(
+            VehicleDeletionNotAllowedException ex, HttpServletRequest req) {
+        return build(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), req, null);
+    }
+
+
 
     private ResponseEntity<ApiError> build(HttpStatus status, String error, String message,
                                            HttpServletRequest req, List<ApiError.FieldError> fields) {
