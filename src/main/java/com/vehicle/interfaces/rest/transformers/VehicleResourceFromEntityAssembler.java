@@ -14,7 +14,8 @@ public class VehicleResourceFromEntityAssembler {
                 v.getMileage().getKilometers(),   // <- antes getValue()
                 v.getPrice().getAmount(),
                 v.getPrice().getCurrency(),
-                v.getStatus()
+                v.getStatus(),
+                v.getMainImageUrl() != null ? v.getMainImageUrl().getValue() : null
         );
     }
 }

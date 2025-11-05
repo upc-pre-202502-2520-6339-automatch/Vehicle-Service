@@ -10,5 +10,6 @@ public record CreateVehicleCommand(
         Integer year,
         Integer mileageKm,
         BigDecimal priceAmount,
-        String priceCurrency
+        String priceCurrency,
+        String mainImageUrl
 ) {}

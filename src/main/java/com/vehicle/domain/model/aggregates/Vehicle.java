@@ -3,8 +3,6 @@ package com.vehicle.domain.model.aggregates;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import com.vehicle.domain.model.valueobjects.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -57,6 +55,12 @@ public class Vehicle {
     @Enumerated(EnumType.STRING)
     private VehicleStatus status;
 
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name="value", column=@Column(name="main_image_url", length=2048)))
+    private ImageUrl mainImageUrl;
+
+
+
     protected Vehicle(){}
 
     private Vehicle(Builder b){
@@ -67,7 +71,8 @@ public class Vehicle {
         this.year = b.year;
         this.mileage = b.mileage;
         this.price = b.price;
-        this.status = VehicleStatus.PUBLISHED;
+        this.mainImageUrl = b.mainImageUrl;
+        this.status = VehicleStatus.UNDER_REVIEW;
     }
 
     public static Builder builder(){ return new Builder(); }
@@ -75,6 +80,8 @@ public class Vehicle {
         private Plate plate; private Vin vin;
         private String brand; private String model;
         private YearOfManufacture year; private Mileage mileage; private Money price;
+        private ImageUrl mainImageUrl;
+
         public Builder plate(String v){ this.plate = new Plate(v); return this; }
         public Builder vin(String v){ this.vin = new Vin(v); return this; }
         public Builder brand(String v){ this.brand = v; return this; }
@@ -82,7 +89,11 @@ public class Vehicle {
         public Builder year(int y){ this.year = new YearOfManufacture(y); return this; }
         public Builder mileage(int km){ this.mileage = new Mileage(km); return this; }
         public Builder price(java.math.BigDecimal amount, String cur){ this.price = new Money(amount,cur); return this; }
+        public Builder mainImageUrl(String url){ this.mainImageUrl = (url!=null? new ImageUrl(url): null); return this; }
+
         public Vehicle build(){ return new Vehicle(this); }
+
+
     }
 
     // ===== Domain behavior (reglas de estados del diagrama) =====
@@ -98,7 +109,19 @@ public class Vehicle {
         if (year>0) this.year = new YearOfManufacture(year);
         if (km>=0) this.mileage = new Mileage(km);
         if (amount!=null) this.price = new Money(amount, cur!=null?cur:this.price.getCurrency());
+
+
+
+
     }
+
+
+    // método de dominio para actualizar solo la imagen principal
+    public void changeMainImageUrl(String url){
+        this.mainImageUrl = (url!=null? new ImageUrl(url): null);
+    }
+
+
 
     /* getters (si usas Lombok puedes @Getter)
     public UUID getId(){ return id; }

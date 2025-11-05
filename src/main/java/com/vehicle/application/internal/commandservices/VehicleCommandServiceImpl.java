@@ -41,6 +41,7 @@ public class VehicleCommandServiceImpl {
                 .year(command.year())
                 .mileage(command.mileageKm())
                 .price(command.priceAmount(), command.priceCurrency())
+                .mainImageUrl(command.mainImageUrl())
                 .build();
 
         var saved = vehicleRepository.save(vehicle);
@@ -61,6 +62,8 @@ public class VehicleCommandServiceImpl {
         if (command.mileageKm() != null) vehicle.setMileage(new Mileage(command.mileageKm()));
         if (command.priceAmount() != null && command.priceCurrency() != null)
             vehicle.setPrice(new Money(command.priceAmount(), command.priceCurrency()));
+        if (command.mainImageUrl() != null)
+            vehicle.changeMainImageUrl(command.mainImageUrl());
 
         vehicleRepository.save(vehicle);
         eventProducer.publishUpdated(new VehicleUpdatedEvent(vehicle.getId()));

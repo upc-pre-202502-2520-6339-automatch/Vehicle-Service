@@ -10,5 +10,6 @@ public record UpdateVehicleResource(
         Integer year,
         Integer mileageKm,
         BigDecimal priceAmount,
-        String priceCurrency
+        String priceCurrency,
+        String mainImageUrl
 ) {}

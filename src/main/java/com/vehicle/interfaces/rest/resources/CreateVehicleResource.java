@@ -13,5 +13,6 @@ public record CreateVehicleResource(
         @NotNull Integer year,
         @NotNull Integer mileageKm,
         @NotNull BigDecimal priceAmount,
-        @NotBlank String priceCurrency
+        @NotBlank String priceCurrency,
+        String mainImageUrl
 ) {}

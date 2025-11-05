@@ -9,5 +9,6 @@ public record UpdateVehicleDetailsCommand(
         Integer year,
         Integer mileageKm,
         BigDecimal priceAmount,
-        String priceCurrency
+        String priceCurrency,
+        String mainImageUrl
 ) {}

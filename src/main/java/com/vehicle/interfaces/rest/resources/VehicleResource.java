@@ -15,5 +15,6 @@ public record VehicleResource(
         Integer mileageKm,
         BigDecimal priceAmount,
         String priceCurrency,
-        VehicleStatus status
+        VehicleStatus status,
+        String mainImageUrl
 ) {}
