@@ -6,7 +6,7 @@ import lombok.Setter;
 
 import java.util.Objects;
 
-@Setter
+
 @Getter
 @Embeddable
 public class Vin {

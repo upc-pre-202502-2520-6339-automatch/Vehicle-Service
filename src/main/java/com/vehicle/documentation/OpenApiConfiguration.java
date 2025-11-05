@@ -14,14 +14,14 @@ public class OpenApiConfiguration {
         // General configuration
         var openApi = new OpenAPI();
         openApi.info(new Info()
-                        .title("Inn Control Platform API")
-                        .description("Inn Control application REST API documentation.")
+                        .title("Vehicle-Service Platform API")
+                        .description("Vehicle-Service application REST API documentation.")
                         .version("v1.0.0")
                         .license(new License().name("Apache 2.0")
                                 .url("https://springdoc.org")))
                 .externalDocs(new ExternalDocumentation()
-                        .description("Inn Control platform wiki documentation")
-                        .url("https://inncontrol-platform.wiki.github.io/docs"));
+                        .description("Vehicle-Service platform wiki documentation")
+                        .url("https://vehicle-platform.wiki.github.io/docs"));
 
         // Add security scheme
        /*final String securitySchemeName = "bearerAuth";

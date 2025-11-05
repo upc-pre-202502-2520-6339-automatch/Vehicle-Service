@@ -1,7 +1,11 @@
 package com.vehicle.interfaces.rest;
 
+import com.vehicle.infrastructure.persistence.jpa.VehicleRepository;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.vehicle.application.internal.commandservices.VehicleCommandServiceImpl;
@@ -20,15 +24,17 @@ public class VehiclesController {
 
     private final VehicleCommandServiceImpl commandService;
     private final VehicleQueryServiceImpl queryService;
+    private final VehicleRepository vehicleRepository;
 
     public VehiclesController(VehicleCommandServiceImpl commandService,
-                              VehicleQueryServiceImpl queryService) {
+                              VehicleQueryServiceImpl queryService, VehicleRepository vehicleRepository) {
         this.commandService = commandService;
         this.queryService = queryService;
+        this.vehicleRepository = vehicleRepository;
     }
 
     @PostMapping
-    public ResponseEntity<VehicleResource> create(@RequestBody CreateVehicleResource resource) {
+    public ResponseEntity<VehicleResource> create(@RequestBody @Valid CreateVehicleResource resource) {
         var id = commandService.handle(
                 CreateVehicleCommandFromResourceAssembler.toCommandFromResource(resource)
         );
@@ -38,7 +44,7 @@ public class VehiclesController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<VehicleResource> update(@PathVariable Long id,
-                                                  @RequestBody UpdateVehicleResource resource) {
+                                                  @RequestBody @Valid UpdateVehicleResource resource) {
         commandService.handle(UpdateVehicleCommandFromResourceAssembler.toCommandFromResource(id, resource));
         var vehicle = queryService.handle(new GetVehicleByIdQuery(id));
         return ResponseEntity.ok(VehicleResourceFromEntityAssembler.toResourceFromEntity(vehicle));
@@ -61,14 +67,24 @@ public class VehiclesController {
     // 1) Versión paginada (la que ya tenías)
     @GetMapping
     public ResponseEntity<Page<VehicleResource>> search(
-            @RequestParam(value = "status", required = false) VehicleStatus status,
+            @RequestParam(value="status", required=false) VehicleStatus status,
             Pageable pageable) {
+
+        // Si no viene sort -> aplicamos createdAt desc usando PageRequest
+        if (pageable.getSort().isUnsorted()) {
+            pageable = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.by("createdAt").descending()
+            );
+        }
 
         var page = queryService.handle(new GetVehiclesByFiltersQuery(status), pageable)
                 .map(VehicleResourceFromEntityAssembler::toResourceFromEntity);
 
         return ResponseEntity.ok(page);
     }
+
 
     // 2) Versión SIN paginación (para Angular)
     @GetMapping("/list")
@@ -84,4 +100,17 @@ public class VehiclesController {
 
         return ResponseEntity.ok(list);
     }
+
+
+    @GetMapping("/internal/exists")
+    public ResponseEntity<Boolean> exists(
+            @RequestParam(required = false) String plate,
+            @RequestParam(required = false) String vin) {
+        boolean ok = (plate != null && vehicleRepository.existsByPlate_Value(plate))
+                || (vin != null && vehicleRepository.existsByVin_Value(vin));
+        return ResponseEntity.ok(ok);
+    }
+
+
+
 }

@@ -6,12 +6,16 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import com.vehicle.domain.model.valueobjects.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 
 @Setter
 @Getter
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "vehicles",
         indexes = {
                 @Index(name = "uk_vehicle_plate", columnList = "plate_value", unique = true),
@@ -25,12 +29,12 @@ public class Vehicle {
     private Long id;
 
     @Getter
-    @CreationTimestamp
+    @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
     @Getter
-    @UpdateTimestamp
+    @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
@@ -64,10 +68,6 @@ public class Vehicle {
         this.mileage = b.mileage;
         this.price = b.price;
         this.status = VehicleStatus.PUBLISHED;
-
-        Instant now = Instant.now();
-        this.createdAt = now;
-        this.updatedAt = now;
     }
 
     public static Builder builder(){ return new Builder(); }
