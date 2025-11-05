@@ -1,5 +1,6 @@
 package com.vehicle.application.internal.commandservices;
 
+import com.vehicle.domain.model.commands.ChangeVehicleMainImageCommand;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import com.vehicle.domain.exceptions.VehicleNotFoundException;
@@ -77,4 +78,19 @@ public class VehicleCommandServiceImpl {
         vehicleRepository.save(vehicle);
         eventProducer.publishUpdated(new VehicleUpdatedEvent(vehicle.getId()));
     }
+
+
+    public void handle(ChangeVehicleMainImageCommand command) {
+        var vehicle = vehicleRepository.findById(command.vehicleId())
+                .orElseThrow(() -> new VehicleNotFoundException(command.vehicleId()));
+
+        vehicle.changeMainImageUrl(command.mainImageUrl()); // null = quitar imagen
+        vehicleRepository.save(vehicle);
+        eventProducer.publishUpdated(new VehicleUpdatedEvent(vehicle.getId()));
+    }
+
+
+
+
+
 }

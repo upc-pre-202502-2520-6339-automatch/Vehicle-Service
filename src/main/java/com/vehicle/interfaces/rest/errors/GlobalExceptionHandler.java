@@ -63,6 +63,12 @@ public class GlobalExceptionHandler {
                 "Unexpected error", req, null);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiError> handleIllegalArgument(
+            IllegalArgumentException ex, HttpServletRequest req) {
+        return build(HttpStatus.BAD_REQUEST, "Bad Request", ex.getMessage(), req, null);
+    }
+
     private ResponseEntity<ApiError> build(HttpStatus status, String error, String message,
                                            HttpServletRequest req, List<ApiError.FieldError> fields) {
         ApiError body = new ApiError(
